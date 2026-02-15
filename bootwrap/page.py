@@ -3,7 +3,12 @@ A web-page.
 """
 
 import re
-import pkg_resources
+
+try:
+    from importlib.resources import files as importlib_resources_files
+
+except ImportError:
+    from importlib_resources import files as importlib_resources_files
 
 from .components import Link, Javascript, inject
 
@@ -142,15 +147,12 @@ class Page:
         )
         root_vars = ':root{' + root_vars + '}'
 
-
-        inner_style = pkg_resources.resource_string(__name__, 'generic.css').\
-            decode('utf-8')
+        inner_style = importlib_resources_files(__name__).joinpath("generic.css").read_text()
         inner_style = root_vars + inner_style
         inner_style = re.sub('\\n|\\s\\s+', ' ', inner_style)
 
         # Creates inner script which will be embedded in the page.
-        inner_script = pkg_resources.resource_string(__name__, 'generic.js').\
-            decode('utf-8')
+        inner_script = importlib_resources_files(__name__).joinpath("generic.js").read_text()
         inner_script = re.sub('\\n|\\s\\s+', ' ', inner_script)
 
         return f'''
